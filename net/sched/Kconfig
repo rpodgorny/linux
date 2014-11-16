@@ -106,6 +106,15 @@ config NET_SCH_PRIO
 	  To compile this code as a module, choose M here: the
 	  module will be called sch_prio.
 
+config NET_SCH_TSOF
+	tristate "Take Short Ones First Priority Queueing (TSOF)"
+	---help---
+	  Say Y here if you want to use an n-band priority queue packet
+	  scheduler based on packet size.
+
+	  To compile this code as a module, choose M here: the
+	  module will be called sch_tsof.
+
 config NET_SCH_MULTIQ
 	tristate "Hardware Multiqueue-aware Multi Band Queuing (MULTIQ)"
 	---help---

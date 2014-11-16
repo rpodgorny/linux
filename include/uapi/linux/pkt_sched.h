@@ -128,6 +128,15 @@ struct tc_prio_qopt {
 	__u8	priomap[TC_PRIO_MAX+1];	/* Map: logical priority -> PRIO band */
 };
 
+/* TSOF section */
+
+#define TCQ_TSOF_BANDS 16
+
+struct tc_tsof_qopt {
+	int bands;
+	__u8	borders[TCQ_TSOF_BANDS-1];	/* Border packet sizes of each band */
+};
+
 /* MULTIQ section */
 
 struct tc_multiq_qopt {
