@@ -12,6 +12,16 @@ menuconfig PHYLIB
 
 if PHYLIB
 
+config SWCONFIG
+	tristate "Switch configuration API"
+	---help---
+	  Switch configuration API using netlink. This allows
+	  you to configure the VLAN features of certain switches.
+
+config SWCONFIG_LEDS
+	bool "Switch LED trigger support"
+	depends on (SWCONFIG && LEDS_TRIGGERS)
+
 comment "MII PHY device drivers"
 
 config AQUANTIA_PHY
@@ -224,6 +234,8 @@ config MDIO_BCM_UNIMAC
 	  controllers as well as some Broadcom Ethernet switches such as the
 	  Starfighter 2 switches.
 endif # PHYLIB
+
+source "drivers/net/phy/b53/Kconfig"
 
 config MICREL_KS8995MA
 	tristate "Micrel KS8995MA 5-ports 10/100 managed Ethernet switch"
