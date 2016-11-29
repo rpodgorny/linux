@@ -204,8 +204,13 @@ static void cx_auto_reboot_notify(struct hda_codec *codec)
 {
 	struct conexant_spec *spec = codec->spec;
 
-	if (codec->core.vendor_id != 0x14f150f2)
+	switch (codec->core.vendor_id) {
+	case 0x14f150f2: /* CX20722 */
+	case 0x14f150f4: /* CX20724 */
+		break;
+	default:
 		return;
+	}
 
 	/* Turn the CX20722 codec into D3 to avoid spurious noises
 	   from the internal speaker during (and after) reboot */
@@ -256,6 +261,7 @@ enum {
 	CXT_FIXUP_HP_530,
 	CXT_FIXUP_CAP_MIX_AMP_5047,
 	CXT_FIXUP_MUTE_LED_EAPD,
+	CXT_FIXUP_HP_SPECTRE,
 };
 
 /* for hda_fixup_thinkpad_acpi() */
@@ -760,6 +766,14 @@ static const struct hda_fixup cxt_fixups[] = {
 		.type = HDA_FIXUP_FUNC,
 		.v.func = cxt_fixup_mute_led_eapd,
 	},
+	[CXT_FIXUP_HP_SPECTRE] = {
+		.type = HDA_FIXUP_PINS,
+		.v.pins = (const struct hda_pintbl[]) {
+			/* enable NID 0x1d for the speaker on top */
+			{ 0x1d, 0x91170111 },
+			{ }
+		}
+	},
 };
 
 static const struct snd_pci_quirk cxt5045_fixups[] = {
@@ -809,6 +823,7 @@ static const struct snd_pci_quirk cxt5066_fixups[] = {
 	SND_PCI_QUIRK(0x1025, 0x0543, "Acer Aspire One 522", CXT_FIXUP_STEREO_DMIC),
 	SND_PCI_QUIRK(0x1025, 0x054c, "Acer Aspire 3830TG", CXT_FIXUP_ASPIRE_DMIC),
 	SND_PCI_QUIRK(0x1025, 0x054f, "Acer Aspire 4830T", CXT_FIXUP_ASPIRE_DMIC),
+	SND_PCI_QUIRK(0x103c, 0x8174, "HP Spectre x360", CXT_FIXUP_HP_SPECTRE),
 	SND_PCI_QUIRK(0x1043, 0x138d, "Asus", CXT_FIXUP_HEADPHONE_MIC_PIN),
 	SND_PCI_QUIRK(0x152d, 0x0833, "OLPC XO-1.5", CXT_FIXUP_OLPC_XO),
 	SND_PCI_QUIRK(0x17aa, 0x20f2, "Lenovo T400", CXT_PINCFG_LENOVO_TP410),
@@ -901,6 +916,9 @@ static int patch_conexant_auto(struct hda_codec *codec)
 		snd_hda_pick_fixup(codec, cxt5051_fixup_models,
 				   cxt5051_fixups, cxt_fixups);
 		break;
+	case 0x14f150f2:
+		codec->power_save_node = 1;
+		/* Fall through */
 	default:
 		codec->pin_amp_workaround = 1;
 		snd_hda_pick_fixup(codec, cxt5066_fixup_models,
@@ -955,6 +973,7 @@ static int patch_conexant_auto(struct hda_codec *codec)
  */
 
 static const struct hda_device_id snd_hda_id_conexant[] = {
+	HDA_CODEC_ENTRY(0x14f12008, "CX8200", patch_conexant_auto),
 	HDA_CODEC_ENTRY(0x14f15045, "CX20549 (Venice)", patch_conexant_auto),
 	HDA_CODEC_ENTRY(0x14f15047, "CX20551 (Waikiki)", patch_conexant_auto),
 	HDA_CODEC_ENTRY(0x14f15051, "CX20561 (Hermosa)", patch_conexant_auto),
@@ -972,9 +991,9 @@ static const struct hda_device_id snd_hda_id_conexant[] = {
 	HDA_CODEC_ENTRY(0x14f150ac, "CX20652", patch_conexant_auto),
 	HDA_CODEC_ENTRY(0x14f150b8, "CX20664", patch_conexant_auto),
 	HDA_CODEC_ENTRY(0x14f150b9, "CX20665", patch_conexant_auto),
-	HDA_CODEC_ENTRY(0x14f150f1, "CX20721", patch_conexant_auto),
+	HDA_CODEC_ENTRY(0x14f150f1, "CX21722", patch_conexant_auto),
 	HDA_CODEC_ENTRY(0x14f150f2, "CX20722", patch_conexant_auto),
-	HDA_CODEC_ENTRY(0x14f150f3, "CX20723", patch_conexant_auto),
+	HDA_CODEC_ENTRY(0x14f150f3, "CX21724", patch_conexant_auto),
 	HDA_CODEC_ENTRY(0x14f150f4, "CX20724", patch_conexant_auto),
 	HDA_CODEC_ENTRY(0x14f1510f, "CX20751/2", patch_conexant_auto),
 	HDA_CODEC_ENTRY(0x14f15110, "CX20751/2", patch_conexant_auto),

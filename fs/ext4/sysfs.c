@@ -223,14 +223,18 @@ static struct attribute *ext4_attrs[] = {
 EXT4_ATTR_FEATURE(lazy_itable_init);
 EXT4_ATTR_FEATURE(batched_discard);
 EXT4_ATTR_FEATURE(meta_bg_resize);
+#ifdef CONFIG_EXT4_FS_ENCRYPTION
 EXT4_ATTR_FEATURE(encryption);
+#endif
 EXT4_ATTR_FEATURE(metadata_csum_seed);
 
 static struct attribute *ext4_feat_attrs[] = {
 	ATTR_LIST(lazy_itable_init),
 	ATTR_LIST(batched_discard),
 	ATTR_LIST(meta_bg_resize),
+#ifdef CONFIG_EXT4_FS_ENCRYPTION
 	ATTR_LIST(encryption),
+#endif
 	ATTR_LIST(metadata_csum_seed),
 	NULL,
 };
@@ -358,8 +362,7 @@ static int name##_open(struct inode *inode, struct file *file) \
 	return single_open(file, ext4_seq_##name##_show, PDE_DATA(inode)); \
 } \
 \
-const struct file_operations ext4_seq_##name##_fops = { \
-	.owner		= THIS_MODULE, \
+static const struct file_operations ext4_seq_##name##_fops = { \
 	.open		= name##_open, \
 	.read		= seq_read, \
 	.llseek		= seq_lseek, \

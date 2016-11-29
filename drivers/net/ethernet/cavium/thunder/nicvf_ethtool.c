@@ -36,11 +36,11 @@ struct nicvf_stat {
 
 static const struct nicvf_stat nicvf_hw_stats[] = {
 	NICVF_HW_STAT(rx_bytes),
+	NICVF_HW_STAT(rx_frames),
 	NICVF_HW_STAT(rx_ucast_frames),
 	NICVF_HW_STAT(rx_bcast_frames),
 	NICVF_HW_STAT(rx_mcast_frames),
-	NICVF_HW_STAT(rx_fcs_errors),
-	NICVF_HW_STAT(rx_l2_errors),
+	NICVF_HW_STAT(rx_drops),
 	NICVF_HW_STAT(rx_drop_red),
 	NICVF_HW_STAT(rx_drop_red_bytes),
 	NICVF_HW_STAT(rx_drop_overrun),
@@ -49,49 +49,60 @@ static const struct nicvf_stat nicvf_hw_stats[] = {
 	NICVF_HW_STAT(rx_drop_mcast),
 	NICVF_HW_STAT(rx_drop_l3_bcast),
 	NICVF_HW_STAT(rx_drop_l3_mcast),
-	NICVF_HW_STAT(rx_bgx_truncated_pkts),
-	NICVF_HW_STAT(rx_jabber_errs),
-	NICVF_HW_STAT(rx_fcs_errs),
-	NICVF_HW_STAT(rx_bgx_errs),
-	NICVF_HW_STAT(rx_prel2_errs),
-	NICVF_HW_STAT(rx_l2_hdr_malformed),
-	NICVF_HW_STAT(rx_oversize),
-	NICVF_HW_STAT(rx_undersize),
-	NICVF_HW_STAT(rx_l2_len_mismatch),
-	NICVF_HW_STAT(rx_l2_pclp),
-	NICVF_HW_STAT(rx_ip_ver_errs),
-	NICVF_HW_STAT(rx_ip_csum_errs),
-	NICVF_HW_STAT(rx_ip_hdr_malformed),
-	NICVF_HW_STAT(rx_ip_payload_malformed),
-	NICVF_HW_STAT(rx_ip_ttl_errs),
-	NICVF_HW_STAT(rx_l3_pclp),
-	NICVF_HW_STAT(rx_l4_malformed),
-	NICVF_HW_STAT(rx_l4_csum_errs),
-	NICVF_HW_STAT(rx_udp_len_errs),
-	NICVF_HW_STAT(rx_l4_port_errs),
-	NICVF_HW_STAT(rx_tcp_flag_errs),
-	NICVF_HW_STAT(rx_tcp_offset_errs),
-	NICVF_HW_STAT(rx_l4_pclp),
-	NICVF_HW_STAT(rx_truncated_pkts),
-	NICVF_HW_STAT(tx_bytes_ok),
-	NICVF_HW_STAT(tx_ucast_frames_ok),
-	NICVF_HW_STAT(tx_bcast_frames_ok),
-	NICVF_HW_STAT(tx_mcast_frames_ok),
+	NICVF_HW_STAT(rx_fcs_errors),
+	NICVF_HW_STAT(rx_l2_errors),
+	NICVF_HW_STAT(tx_bytes),
+	NICVF_HW_STAT(tx_frames),
+	NICVF_HW_STAT(tx_ucast_frames),
+	NICVF_HW_STAT(tx_bcast_frames),
+	NICVF_HW_STAT(tx_mcast_frames),
+	NICVF_HW_STAT(tx_drops),
 };
 
 static const struct nicvf_stat nicvf_drv_stats[] = {
-	NICVF_DRV_STAT(rx_frames_ok),
-	NICVF_DRV_STAT(rx_frames_64),
-	NICVF_DRV_STAT(rx_frames_127),
-	NICVF_DRV_STAT(rx_frames_255),
-	NICVF_DRV_STAT(rx_frames_511),
-	NICVF_DRV_STAT(rx_frames_1023),
-	NICVF_DRV_STAT(rx_frames_1518),
-	NICVF_DRV_STAT(rx_frames_jumbo),
-	NICVF_DRV_STAT(rx_drops),
-	NICVF_DRV_STAT(tx_frames_ok),
+	NICVF_DRV_STAT(rx_bgx_truncated_pkts),
+	NICVF_DRV_STAT(rx_jabber_errs),
+	NICVF_DRV_STAT(rx_fcs_errs),
+	NICVF_DRV_STAT(rx_bgx_errs),
+	NICVF_DRV_STAT(rx_prel2_errs),
+	NICVF_DRV_STAT(rx_l2_hdr_malformed),
+	NICVF_DRV_STAT(rx_oversize),
+	NICVF_DRV_STAT(rx_undersize),
+	NICVF_DRV_STAT(rx_l2_len_mismatch),
+	NICVF_DRV_STAT(rx_l2_pclp),
+	NICVF_DRV_STAT(rx_ip_ver_errs),
+	NICVF_DRV_STAT(rx_ip_csum_errs),
+	NICVF_DRV_STAT(rx_ip_hdr_malformed),
+	NICVF_DRV_STAT(rx_ip_payload_malformed),
+	NICVF_DRV_STAT(rx_ip_ttl_errs),
+	NICVF_DRV_STAT(rx_l3_pclp),
+	NICVF_DRV_STAT(rx_l4_malformed),
+	NICVF_DRV_STAT(rx_l4_csum_errs),
+	NICVF_DRV_STAT(rx_udp_len_errs),
+	NICVF_DRV_STAT(rx_l4_port_errs),
+	NICVF_DRV_STAT(rx_tcp_flag_errs),
+	NICVF_DRV_STAT(rx_tcp_offset_errs),
+	NICVF_DRV_STAT(rx_l4_pclp),
+	NICVF_DRV_STAT(rx_truncated_pkts),
+
+	NICVF_DRV_STAT(tx_desc_fault),
+	NICVF_DRV_STAT(tx_hdr_cons_err),
+	NICVF_DRV_STAT(tx_subdesc_err),
+	NICVF_DRV_STAT(tx_max_size_exceeded),
+	NICVF_DRV_STAT(tx_imm_size_oflow),
+	NICVF_DRV_STAT(tx_data_seq_err),
+	NICVF_DRV_STAT(tx_mem_seq_err),
+	NICVF_DRV_STAT(tx_lock_viol),
+	NICVF_DRV_STAT(tx_data_fault),
+	NICVF_DRV_STAT(tx_tstmp_conflict),
+	NICVF_DRV_STAT(tx_tstmp_timeout),
+	NICVF_DRV_STAT(tx_mem_fault),
+	NICVF_DRV_STAT(tx_csum_overlap),
+	NICVF_DRV_STAT(tx_csum_overflow),
+
+	NICVF_DRV_STAT(rcv_buffer_alloc_failures),
 	NICVF_DRV_STAT(tx_tso),
-	NICVF_DRV_STAT(tx_drops),
+	NICVF_DRV_STAT(tx_timeout),
 	NICVF_DRV_STAT(txq_stop),
 	NICVF_DRV_STAT(txq_wake),
 };
@@ -112,6 +123,13 @@ static int nicvf_get_settings(struct net_device *netdev,
 
 	cmd->supported = 0;
 	cmd->transceiver = XCVR_EXTERNAL;
+
+	if (!nic->link_up) {
+		cmd->duplex = DUPLEX_UNKNOWN;
+		ethtool_cmd_speed_set(cmd, SPEED_UNKNOWN);
+		return 0;
+	}
+
 	if (nic->speed <= 1000) {
 		cmd->port = PORT_MII;
 		cmd->autoneg = AUTONEG_ENABLE;
@@ -123,6 +141,13 @@ static int nicvf_get_settings(struct net_device *netdev,
 	ethtool_cmd_speed_set(cmd, nic->speed);
 
 	return 0;
+}
+
+static u32 nicvf_get_link(struct net_device *netdev)
+{
+	struct nicvf *nic = netdev_priv(netdev);
+
+	return nic->link_up;
 }
 
 static void nicvf_get_drvinfo(struct net_device *netdev,
@@ -262,8 +287,8 @@ static void nicvf_get_ethtool_stats(struct net_device *netdev,
 				    struct ethtool_stats *stats, u64 *data)
 {
 	struct nicvf *nic = netdev_priv(netdev);
-	int stat;
-	int sqs;
+	int stat, tmp_stats;
+	int sqs, cpu;
 
 	nicvf_update_stats(nic);
 
@@ -273,9 +298,13 @@ static void nicvf_get_ethtool_stats(struct net_device *netdev,
 	for (stat = 0; stat < nicvf_n_hw_stats; stat++)
 		*(data++) = ((u64 *)&nic->hw_stats)
 				[nicvf_hw_stats[stat].index];
-	for (stat = 0; stat < nicvf_n_drv_stats; stat++)
-		*(data++) = ((u64 *)&nic->drv_stats)
-				[nicvf_drv_stats[stat].index];
+	for (stat = 0; stat < nicvf_n_drv_stats; stat++) {
+		tmp_stats = 0;
+		for_each_possible_cpu(cpu)
+			tmp_stats += ((u64 *)per_cpu_ptr(nic->drv_stats, cpu))
+				     [nicvf_drv_stats[stat].index];
+		*(data++) = tmp_stats;
+	}
 
 	nicvf_get_qset_stats(nic, stats, &data);
 
@@ -366,7 +395,10 @@ static void nicvf_get_regs(struct net_device *dev,
 		p[i++] = nicvf_queue_reg_read(nic, NIC_QSET_SQ_0_7_DOOR, q);
 		p[i++] = nicvf_queue_reg_read(nic, NIC_QSET_SQ_0_7_STATUS, q);
 		p[i++] = nicvf_queue_reg_read(nic, NIC_QSET_SQ_0_7_DEBUG, q);
-		p[i++] = nicvf_queue_reg_read(nic, NIC_QSET_SQ_0_7_CNM_CHG, q);
+		/* Padding, was NIC_QSET_SQ_0_7_CNM_CHG, which
+		 * produces bus errors when read
+		 */
+		p[i++] = 0;
 		p[i++] = nicvf_queue_reg_read(nic, NIC_QSET_SQ_0_7_STAT_0_1, q);
 		reg_offset = NIC_QSET_SQ_0_7_STAT_0_1 | (1 << 3);
 		p[i++] = nicvf_queue_reg_read(nic, reg_offset, q);
@@ -660,7 +692,7 @@ static int nicvf_set_channels(struct net_device *dev,
 
 static const struct ethtool_ops nicvf_ethtool_ops = {
 	.get_settings		= nicvf_get_settings,
-	.get_link		= ethtool_op_get_link,
+	.get_link		= nicvf_get_link,
 	.get_drvinfo		= nicvf_get_drvinfo,
 	.get_msglevel		= nicvf_get_msglevel,
 	.set_msglevel		= nicvf_set_msglevel,

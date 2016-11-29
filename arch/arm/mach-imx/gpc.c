@@ -177,6 +177,7 @@ static struct irq_chip imx_gpc_chip = {
 	.irq_unmask		= imx_gpc_irq_unmask,
 	.irq_retrigger		= irq_chip_retrigger_hierarchy,
 	.irq_set_wake		= imx_gpc_irq_set_wake,
+	.irq_set_type           = irq_chip_set_type_parent,
 #ifdef CONFIG_SMP
 	.irq_set_affinity	= irq_chip_set_affinity_parent,
 #endif
@@ -269,6 +270,12 @@ static int __init imx_gpc_init(struct device_node *node,
 	/* Initially mask all interrupts */
 	for (i = 0; i < IMR_NUM; i++)
 		writel_relaxed(~0, gpc_base + GPC_IMR1 + i * 4);
+
+	/*
+	 * Clear the OF_POPULATED flag set in of_irq_init so that
+	 * later the GPC power domain driver will not be skipped.
+	 */
+	of_node_clear_flag(node, OF_POPULATED);
 
 	return 0;
 }
@@ -373,8 +380,13 @@ static struct pu_domain imx6q_pu_domain = {
 		.name = "PU",
 		.power_off = imx6q_pm_pu_power_off,
 		.power_on = imx6q_pm_pu_power_on,
-		.power_off_latency_ns = 25000,
-		.power_on_latency_ns = 2000000,
+		.states = {
+			[0] = {
+				.power_off_latency_ns = 25000,
+				.power_on_latency_ns = 2000000,
+			},
+		},
+		.state_count = 1,
 	},
 };
 
@@ -396,7 +408,7 @@ static struct genpd_onecell_data imx_gpc_onecell_data = {
 static int imx_gpc_genpd_init(struct device *dev, struct regulator *pu_reg)
 {
 	struct clk *clk;
-	int i;
+	int i, ret;
 
 	imx6q_pu_domain.reg = pu_reg;
 
@@ -418,13 +430,22 @@ static int imx_gpc_genpd_init(struct device *dev, struct regulator *pu_reg)
 	if (!IS_ENABLED(CONFIG_PM_GENERIC_DOMAINS))
 		return 0;
 
-	pm_genpd_init(&imx6q_pu_domain.base, NULL, false);
-	return of_genpd_add_provider_onecell(dev->of_node,
-					     &imx_gpc_onecell_data);
+	for (i = 0; i < ARRAY_SIZE(imx_gpc_domains); i++)
+		pm_genpd_init(imx_gpc_domains[i], NULL, false);
 
+	ret =  of_genpd_add_provider_onecell(dev->of_node,
+					     &imx_gpc_onecell_data);
+	if (ret)
+		goto power_off;
+
+	return 0;
+
+power_off:
+	imx6q_pm_pu_power_off(&imx6q_pu_domain.base);
 clk_err:
 	while (i--)
 		clk_put(imx6q_pu_domain.clk[i]);
+	imx6q_pu_domain.reg = NULL;
 	return -EINVAL;
 }
 

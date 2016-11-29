@@ -83,10 +83,10 @@ static inline void purge_tlb_entries(struct mm_struct *mm, unsigned long addr)
 	printk("%s:%d: bad pgd %08lx.\n", __FILE__, __LINE__, (unsigned long)pgd_val(e))
 
 /* This is the size of the initially mapped kernel memory */
-#ifdef CONFIG_64BIT
-#define KERNEL_INITIAL_ORDER	25	/* 1<<25 = 32MB */
+#if defined(CONFIG_64BIT)
+#define KERNEL_INITIAL_ORDER	26	/* 1<<26 = 64MB */
 #else
-#define KERNEL_INITIAL_ORDER	24	/* 1<<24 = 16MB */
+#define KERNEL_INITIAL_ORDER	25	/* 1<<25 = 32MB */
 #endif
 #define KERNEL_INITIAL_SIZE	(1 << KERNEL_INITIAL_ORDER)
 
@@ -372,7 +372,8 @@ static inline pte_t pte_mkspecial(pte_t pte)	{ return pte; }
  */
 #ifdef CONFIG_HUGETLB_PAGE
 #define pte_huge(pte)           (pte_val(pte) & _PAGE_HUGE)
-#define pte_mkhuge(pte)         (__pte(pte_val(pte) | _PAGE_HUGE))
+#define pte_mkhuge(pte)         (__pte(pte_val(pte) | \
+				 (parisc_requires_coherency() ? 0 : _PAGE_HUGE)))
 #else
 #define pte_huge(pte)           (0)
 #define pte_mkhuge(pte)         (pte)
